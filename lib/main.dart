@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 // change `flutter_database` to whatever your project name is
 import 'database_helper.dart';
 
@@ -113,6 +116,15 @@ class MyHomePage extends StatelessWidget {
                 _delete();
               },
             ),
+            RaisedButton(
+              child: Text(
+                'dump',
+                style: TextStyle(fontSize: 20),
+              ),
+              onPressed: () {
+                _dump();
+              },
+            ),
           ],
         ),
       ),
@@ -153,5 +165,11 @@ class MyHomePage extends StatelessWidget {
     final id = await dbHelper.queryRowCount();
     final rowsDeleted = await dbHelper.delete(id);
     print('deleted $rowsDeleted row(s): row $id');
+  }
+
+  void _dump() async {
+    // Assuming that the number of rows is the id for the last row.
+    String csvPath = await dbHelper.saveCSV();
+    Share.shareFiles(['$csvPath'], text: 'Database CSV');
   }
 }

@@ -4,8 +4,11 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:uhsaf/csv_utils.dart';
+
 class DatabaseHelper {
   static final _databaseName = "MyDatabase.db";
+  static final _csvName = "MyDatabase.csv";
   static final _databaseVersion = 1;
 
   static final table = 'my_table';
@@ -84,5 +87,21 @@ class DatabaseHelper {
   Future<int> delete(int id) async {
     Database db = await instance.database;
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+  }
+
+  Future<String> csvString() async {
+    List<Map<String, dynamic>> data = await this.queryAllRows();
+    return mapListToCsv(data);
+  }
+
+  Future<String> saveCSV() async {
+    String csvData = await this.csvString();
+    List<Directory> _externalStorageDirectories = await getExternalStorageDirectories(type: StorageDirectory.downloads);
+    String downloadPath = _externalStorageDirectories[0].path;
+    String csvPath = '$downloadPath/$_csvName';
+    File file = File(csvPath);
+    print(csvPath);
+    await file.writeAsString(csvData, mode: FileMode.writeOnly, flush: true);
+    return csvPath;
   }
 }
