@@ -74,9 +74,12 @@ class HomeRoute extends StatelessWidget {
       bottomNavigationBar: Container(
         color: Colors.blue,
         child: Text(
-          'Desarrollado por la Facultad de Matemática y Computación de la Universidad de la Habana',
-          textAlign: TextAlign.center,
-        ),
+            'Desarrollado por la Facultad de Matemática y Computación de la Universidad de la Habana',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+            )),
       ),
     );
   }
