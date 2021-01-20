@@ -44,7 +44,7 @@ class HomePage extends StatelessWidget {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            'Desarrollador por la Facultad de Matemática y '
+                            'Desarrollado por la Facultad de Matemática y '
                             'Computación de la Universidad de La Habana',
                             textAlign: TextAlign.center,
                             style: TextStyle(
