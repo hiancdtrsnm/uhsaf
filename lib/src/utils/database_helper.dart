@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:uhsaf/csv_utils.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:uhsaf/src/utils/csv_utils.dart';
 
 class DatabaseHelper {
   static final _databaseName = "MyDatabase.db";
@@ -16,10 +16,12 @@ class DatabaseHelper {
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
+
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
   // only have a single app-wide reference to the database
   static Database _database;
+
   Future<Database> get database async {
     if (_database != null) return _database;
     // lazily instantiate the db the first time it is accessed
