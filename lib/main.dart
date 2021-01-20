@@ -1,61 +1,81 @@
 import 'package:flutter/material.dart';
 // change `flutter_database` to whatever your project name is
 import 'database_helper.dart';
+import 'form.dart';
+import 'saf_form.dart';
+import 'saf_model.dart';
+import 'package:share/share.dart';
 
 void main() {
+  final dbHelper = DatabaseHelper.instance;
+  Future<void> onSave(SAFModel safdata) async {
+    print("This work");
+    await dbHelper.insert(safdata.toJson());
+  }
+
   runApp(MaterialApp(
     initialRoute: '/',
     routes: {
       '/': (context) => HomeRoute(),
-      '/second': (context) => SecondRoute(),
-      '/third': (context) => MyHomePage(),
+      '/form': (context) => SAFForm(
+            onSave: onSave,
+          ),
+      // '/third': (context) => MyHomePage(),
+      // '/about': (context) => AboutPage(),
     },
   ));
 }
 
 class HomeRoute extends StatelessWidget {
+  final dbHelper = DatabaseHelper.instance;
+
+  void _dump() async {
+    // Assuming that the number of rows is the id for the last row.
+    String csvPath = await dbHelper.saveCSV();
+    Share.shareFiles(['$csvPath'], text: 'Database CSV');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Geeks for Geeks'),
-        backgroundColor: Colors.green,
+        title: Text('Formulario SAF'),
+        // backgroundColor: Colors.green,
       ),
       body: Center(
           child: Column(
         children: <Widget>[
           RaisedButton(
-            child: Text('Click Me!'),
+            child: Text(
+              'Formulario 📜',
+              style: TextStyle(fontSize: 20),
+            ),
             onPressed: () {
-              Navigator.pushNamed(context, '/second');
+              Navigator.pushNamed(context, '/form');
             },
           ),
+          // RaisedButton(
+          //   child: Text('Database Stuff'),
+          //   onPressed: () {
+          //     Navigator.pushNamed(context, '/third');
+          //   },
+          // ),
           RaisedButton(
-            child: Text('Database Stuff'),
+            child: Text(
+              'Exportar 💾',
+              style: TextStyle(fontSize: 20),
+            ),
             onPressed: () {
-              Navigator.pushNamed(context, '/third');
+              _dump();
             },
           ),
         ],
       )),
-    );
-  }
-}
-
-class SecondRoute extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Click Me Page"),
-        backgroundColor: Colors.green,
-      ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Back!'),
+      bottomNavigationBar: Container(
+        color: Colors.blue,
+        child: Text(
+          'Desarrollado por la Facultad de Matemática y Computación de la Universidad de la Habana',
+          textAlign: TextAlign.center,
         ),
       ),
     );
@@ -124,8 +144,7 @@ class MyHomePage extends StatelessWidget {
   void _insert() async {
     // row to insert
     Map<String, dynamic> row = {
-      DatabaseHelper.columnName: 'Bob',
-      DatabaseHelper.columnAge: 23
+      'asdf': 'Bob',
     };
     final id = await dbHelper.insert(row);
     print('inserted row id: $id');
@@ -140,9 +159,7 @@ class MyHomePage extends StatelessWidget {
   void _update() async {
     // row to update
     Map<String, dynamic> row = {
-      DatabaseHelper.columnId: 1,
-      DatabaseHelper.columnName: 'Mary',
-      DatabaseHelper.columnAge: 32
+      'asdf': 1,
     };
     final rowsAffected = await dbHelper.update(row);
     print('updated $rowsAffected row(s)');

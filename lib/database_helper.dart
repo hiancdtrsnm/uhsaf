@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uhsaf/csv_utils.dart';
 
 class DatabaseHelper {
   static final _databaseName = "MyDatabase.db";
+  static final _csvName = "data-${DateTime.now()}.csv";
   static final _databaseVersion = 1;
 
-  static final table = 'my_table';
+  static final table = 'SAF';
 
   static final columnId = '_id';
-  static final columnName = 'name';
-  static final columnAge = 'age';
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -25,6 +25,23 @@ class DatabaseHelper {
     // lazily instantiate the db the first time it is accessed
     _database = await _initDatabase();
     return _database;
+  }
+
+  Future<String> csvString() async {
+    List<Map<String, dynamic>> data = await this.queryAllRows();
+    return mapListToCsv(data);
+  }
+
+  Future<String> saveCSV() async {
+    String csvData = await this.csvString();
+    List<Directory> _externalStorageDirectories =
+        await getExternalStorageDirectories(type: StorageDirectory.downloads);
+    String downloadPath = _externalStorageDirectories[0].path;
+    String csvPath = '$downloadPath/$_csvName';
+    File file = File(csvPath);
+    print(csvPath);
+    await file.writeAsString(csvData, mode: FileMode.writeOnly, flush: true);
+    return csvPath;
   }
 
   // this opens the database (and creates it if it doesn't exist)
@@ -40,8 +57,17 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY,
-            $columnName TEXT NOT NULL,
-            $columnAge INTEGER NOT NULL
+            municipality TEXT NOT NULL,
+            saf TEXT NOT NULL,
+            name TEXT NOT NULL,
+            address TEXT NOT NULL,
+            identifier TEXT NOT NULL,
+            assistance TEXT NOT NULL,
+            satisfaction TEXT NOT NULL,
+            quality TEXT NOT NULL,
+            opinions TEXT NOT NULL,
+            causes TEXT NOT NULL,
+            timestamp TEXT NOT NULL
           )
           ''');
   }
@@ -52,6 +78,7 @@ class DatabaseHelper {
   // and the value is the column value. The return value is the id of the
   // inserted row.
   Future<int> insert(Map<String, dynamic> row) async {
+    row['timestamp'] = '${DateTime.now()}';
     Database db = await instance.database;
     return await db.insert(table, row);
   }
