@@ -1,4 +1,4 @@
-package cu.uh.matcom.uhsaf
+package com.example.uhsaf
 
 import io.flutter.embedding.android.FlutterActivity
 

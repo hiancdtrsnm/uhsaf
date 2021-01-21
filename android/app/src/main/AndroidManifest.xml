@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cu.uh.matcom.uhsaf">
+    package="com.example.uhsaf">
    <application
         android:label="Formulario SAF"
         android:icon="@mipmap/launcher_icon">
