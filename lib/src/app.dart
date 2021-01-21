@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
 import 'package:theme_provider/theme_provider.dart';
 import 'package:uhsaf/src/pages/pages.dart';
@@ -6,6 +7,7 @@ import 'package:uhsaf/src/pages/pages.dart';
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return ThemeProvider(
       saveThemesOnChange: true,
       loadThemeOnInit: true,
