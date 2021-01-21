@@ -8,7 +8,7 @@ import 'package:uhsaf/src/utils/csv_utils.dart';
 class DatabaseHelper {
   static final _databaseName = "MyDatabase.db";
   static final _csvName = "data-${DateTime.now()}.csv";
-  static final _databaseVersion = 1;
+  static final _databaseVersion = 2;
 
   static final table = 'SAF';
 
@@ -50,8 +50,12 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    return await openDatabase(path,
-        version: _databaseVersion, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   // SQL code to create the database table
@@ -72,6 +76,16 @@ class DatabaseHelper {
             timestamp TEXT NOT NULL
           )
           ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion == 1) {
+      await db.execute('''
+      UPDATE $table
+      SET satisfaction = "", quality = "", assistance = "No asiste"
+      WHERE assistance = "No asite";
+      ''');
+    }
   }
 
   // Helper methods

@@ -138,7 +138,7 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
                 'Diariamente',
                 'Regularmente',
                 'Ocasionalmente',
-                'No asite',
+                'No asiste',
               ],
               onChanged: (value) {
                 setState(() {
@@ -152,9 +152,9 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
                 return null;
               },
             ),
-            if (assistance != null && assistance != 'No asite')
+            if (assistance != null && assistance != 'No asiste')
               SizedBox(height: 10),
-            if (assistance != null && assistance != 'No asite')
+            if (assistance != null && assistance != 'No asiste')
               SAFDropdownField(
                 label: 'Nivel de satisfacción',
                 options: [
@@ -174,9 +174,9 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
                   return null;
                 },
               ),
-            if (assistance != null && assistance != 'No asite')
+            if (assistance != null && assistance != 'No asiste')
               SizedBox(height: 10),
-            if (assistance != null && assistance != 'No asite')
+            if (assistance != null && assistance != 'No asiste')
               SAFDropdownField(
                 label: 'Calidad del servicio',
                 options: [
