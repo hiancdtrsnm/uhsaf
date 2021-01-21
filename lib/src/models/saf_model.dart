@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 class SAFModel {
+  int id;
   final String municipality;
   final String saf;
   final String name;
@@ -12,7 +13,7 @@ class SAFModel {
   final String opinions;
   final String causes;
 
-  const SAFModel({
+  SAFModel({
     @required this.municipality,
     @required this.saf,
     @required this.name,
@@ -23,9 +24,10 @@ class SAFModel {
     @required this.quality,
     @required this.opinions,
     @required this.causes,
+    this.id,
   });
 
-  factory SAFModel.fromJson(Map<String, dynamic> json) {
+  static SAFModel fromJson(Map<String, dynamic> json) {
     return SAFModel(
       municipality: json['municipality'] as String,
       saf: json['saf'] as String,

@@ -6,8 +6,11 @@ import 'package:uhsaf/src/widgets/widgets.dart';
 
 class SAFFormWidget extends StatefulWidget {
   final SAFOnSave onSave;
+  final SAFModel model;
 
-  const SAFFormWidget({Key key, @required this.onSave}) : super(key: key);
+  SAFFormWidget({Key key, @required this.onSave, this.model})
+      : assert(model == null || model.id != null),
+        super(key: key);
 
   @override
   _SAFFormWidgetState createState() => _SAFFormWidgetState();
@@ -37,16 +40,33 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
       opinionsController,
       causesController
     ];
-    SharedPreferences.getInstance().then((prefs) {
-      final municipality = prefs.containsKey('municipality')
-          ? prefs.getString('municipality')
-          : null;
-      final saf = prefs.containsKey('saf') ? prefs.getString('saf') : null;
-      setState(() {
-        this.municipality = municipality;
-        safController.text = saf;
+    if (widget.model != null) {
+      safController.text = widget.model.saf;
+      nameController.text = widget.model.name;
+      addressController.text = widget.model.address;
+      identifierController.text = widget.model.identifier;
+      opinionsController.text = widget.model.opinions;
+      causesController.text = widget.model.causes;
+      municipality = _prepareDropdownValue(widget.model.municipality);
+      assistance = _prepareDropdownValue(widget.model.assistance);
+      satisfaction = _prepareDropdownValue(widget.model.satisfaction);
+      quality = _prepareDropdownValue(widget.model.quality);
+    } else {
+      SharedPreferences.getInstance().then((prefs) {
+        final municipality = prefs.containsKey('municipality')
+            ? prefs.getString('municipality')
+            : null;
+        final saf = prefs.containsKey('saf') ? prefs.getString('saf') : null;
+        setState(() {
+          this.municipality = municipality;
+          safController.text = saf;
+        });
       });
-    });
+    }
+  }
+
+  String _prepareDropdownValue(String value) {
+    return value != null && value.isEmpty ? null : value;
   }
 
   @override
@@ -147,6 +167,7 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
             ),
             // Assistance
             SAFDropdownField(
+              value: assistance,
               label: 'Asiste al SAF',
               options: [
                 'Diariamente',
@@ -168,6 +189,7 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
             ),
             // Satisfaction
             SAFDropdownField(
+              value: satisfaction,
               label: 'Nivel de satisfacción',
               options: [
                 'Alto',
@@ -188,6 +210,7 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
             ),
             // Quality
             SAFDropdownField(
+              value: quality,
               label: 'Calidad del servicio',
               options: [
                 'Bueno',
@@ -262,6 +285,7 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
                               quality: quality ?? '',
                               opinions: opinionsController.text?.trim() ?? '',
                               causes: causesController.text?.trim() ?? '',
+                              id: widget.model?.id,
                             ),
                           );
                           if (isOk) {

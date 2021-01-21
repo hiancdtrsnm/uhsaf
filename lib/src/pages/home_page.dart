@@ -84,9 +84,28 @@ class _HomePageState extends State<HomePage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        onTap: () {
+                        onTap: () async {
                           Get.back();
-                          Get.to(FormPage());
+                          await Get.to(FormPage());
+                          setState(() {});
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.list_alt,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'Registros',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onTap: () async {
+                          Get.back();
+                          await Get.to(RegistersPage());
+                          setState(() {});
                         },
                       ),
                       ListTile(
@@ -95,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                         ),
                         title: Text(
-                          'Exportar Datos',
+                          'Exportar',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -136,13 +155,22 @@ class _HomePageState extends State<HomePage> {
               buildButton(
                 context: context,
                 text: 'Formulario',
-                onPressed: () {
-                  Get.to(FormPage());
+                onPressed: () async {
+                  await Get.to(FormPage());
+                  setState(() {});
                 },
               ),
               buildButton(
                 context: context,
-                text: 'Exportar Datos',
+                text: 'Registros',
+                onPressed: () async {
+                  await Get.to(RegistersPage());
+                  setState(() {});
+                },
+              ),
+              buildButton(
+                context: context,
+                text: 'Exportar',
                 onPressed: _share,
               ),
               FutureBuilder<int>(
@@ -179,7 +207,7 @@ class _HomePageState extends State<HomePage> {
     @required VoidCallback onPressed,
   }) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+      margin: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
       child: Row(
         children: [
           Expanded(
