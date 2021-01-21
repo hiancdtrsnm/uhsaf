@@ -30,7 +30,7 @@ class FormPage extends StatelessWidget {
                       child: AlertDialog(
                         title: Text('Confirme'),
                         content: Text(
-                          '¿Está usted seguro de que desea eliminar el'
+                          '¿Está usted seguro de que desea eliminar el '
                           'registro?',
                         ),
                         actions: [
