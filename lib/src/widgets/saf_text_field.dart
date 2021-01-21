@@ -20,19 +20,22 @@ class SAFTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      minLines: minLines,
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+    return Container(
+      margin: EdgeInsets.only(top: 10),
+      child: TextFormField(
+        minLines: minLines,
+        maxLines: maxLines,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
+        controller: controller,
+        validator: validator,
       ),
-      controller: controller,
-      validator: validator,
     );
   }
 }

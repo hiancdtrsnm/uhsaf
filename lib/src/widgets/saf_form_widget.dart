@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uhsaf/src/models/models.dart';
 import 'package:uhsaf/src/utils/utils.dart';
 import 'package:uhsaf/src/widgets/widgets.dart';
@@ -27,17 +28,29 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
   List<TextEditingController> controllers;
 
   @override
+  void initState() {
+    super.initState();
+    controllers = [
+      nameController,
+      addressController,
+      identifierController,
+      opinionsController,
+      causesController
+    ];
+    SharedPreferences.getInstance().then((prefs) {
+      final municipality = prefs.containsKey('municipality')
+          ? prefs.getString('municipality')
+          : null;
+      final saf = prefs.containsKey('saf') ? prefs.getString('saf') : null;
+      setState(() {
+        this.municipality = municipality;
+        safController.text = saf;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (controllers == null) {
-      controllers = [
-        safController,
-        nameController,
-        addressController,
-        identifierController,
-        opinionsController,
-        causesController
-      ];
-    }
     return Container(
       margin: EdgeInsets.all(10),
       child: Form(
@@ -45,8 +58,9 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            // Municipality
             SAFDropdownField(
+              value: municipality,
               label: 'Municipio',
               options: [
                 'Arroyo Naranjo',
@@ -72,34 +86,34 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
               },
               validator: (value) {
                 if (value == null) {
-                  return 'Campo obligatorio';
+                  return 'El municipio es obligatorio';
                 }
                 return null;
               },
             ),
-            SizedBox(height: 10),
+            // SAF
             SAFTextField(
               label: 'SAF',
               controller: safController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Campo obligatorio';
+                  return 'El SAF es obligatorio';
                 }
                 return null;
               },
             ),
-            SizedBox(height: 10),
+            // Name
             SAFTextField(
               label: 'Nombre y Apellidos',
               controller: nameController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Campo obligatorio';
+                  return 'El nombre y los apellidos son obligatorios';
                 }
                 return null;
               },
             ),
-            SizedBox(height: 10),
+            // Address
             SAFTextField(
               label: 'Dirección particular',
               controller: addressController,
@@ -107,12 +121,12 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
               maxLines: 10,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Campo obligatorio';
+                  return 'La dirección particular es obligatoria';
                 }
                 return null;
               },
             ),
-            SizedBox(height: 10),
+            // Identifier
             SAFTextField(
               label: 'No. de Carné de Identidad',
               controller: identifierController,
@@ -122,16 +136,16 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Campo obligatorio';
+                  return 'El No. de Carné de Identidad es obligatorio';
                 }
                 if (value.length != 11 ||
                     value.characters.any((e) => !'0123456789'.contains(e))) {
-                  return 'Deben ser 11 dígitos';
+                  return 'El No. de Carné de Identidad debe contener 11 dígitos';
                 }
                 return null;
               },
             ),
-            SizedBox(height: 10),
+            // Assistance
             SAFDropdownField(
               label: 'Asiste al SAF',
               options: [
@@ -147,114 +161,129 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
               },
               validator: (value) {
                 if (value == null) {
-                  return 'Campo obligatorio';
+                  return 'Si asiste al SAF es obligatorio';
                 }
                 return null;
               },
             ),
-            if (assistance != null && assistance != 'No asiste')
-              SizedBox(height: 10),
-            if (assistance != null && assistance != 'No asiste')
-              SAFDropdownField(
-                label: 'Nivel de satisfacción',
-                options: [
-                  'Alto',
-                  'Medio',
-                  'Bajo',
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    satisfaction = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Campo obligatorio';
-                  }
-                  return null;
-                },
-              ),
-            if (assistance != null && assistance != 'No asiste')
-              SizedBox(height: 10),
-            if (assistance != null && assistance != 'No asiste')
-              SAFDropdownField(
-                label: 'Calidad del servicio',
-                options: [
-                  'Bueno',
-                  'Regular',
-                  'Malo',
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    quality = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Campo obligatorio';
-                  }
-                  return null;
-                },
-              ),
-            SizedBox(height: 10),
+            // Satisfaction
+            SAFDropdownField(
+              label: 'Nivel de satisfacción',
+              options: [
+                'Alto',
+                'Medio',
+                'Bajo',
+              ],
+              onChanged: (value) {
+                setState(() {
+                  satisfaction = value;
+                });
+              },
+              validator: (value) {
+                if (assistance != 'No asiste' && value == null) {
+                  return 'El nivel de satisfacción es obligatorio';
+                }
+                return null;
+              },
+            ),
+            // Quality
+            SAFDropdownField(
+              label: 'Calidad del servicio',
+              options: [
+                'Bueno',
+                'Regular',
+                'Malo',
+              ],
+              onChanged: (value) {
+                setState(() {
+                  quality = value;
+                });
+              },
+              validator: (value) {
+                if (assistance != 'No asiste' && value == null) {
+                  return 'La calidad del servicio es obligatoria';
+                }
+                return null;
+              },
+            ),
+            // Opinions
             SAFTextField(
               label: 'Opiniones generales sobre el servicio SAF',
               controller: opinionsController,
               minLines: 1,
               maxLines: 10,
             ),
-            SizedBox(height: 10),
-            SAFTextField(
-              label: 'En caso de no asistir, ¿cuáles son las causas?',
-              controller: causesController,
-              minLines: 1,
-              maxLines: 10,
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlineButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 15,
-                        horizontal: 20,
+            // Causes
+            if (assistance == 'No asiste')
+              SAFTextField(
+                label: 'En caso de no asistir, ¿cuáles son las causas?',
+                controller: causesController,
+                minLines: 1,
+                maxLines: 10,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Si no asiste las causas son obligatorias';
+                  }
+                  return null;
+                },
+              ),
+            // Save
+            Container(
+              margin: EdgeInsets.only(
+                top: 10,
+                bottom: MediaQuery.of(context).size.height / 2,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlineButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text('Guardar'),
-                    ),
-                    onPressed: () async {
-                      if (keyForm.currentState.validate()) {
-                        final isOk = await widget.onSave(
-                          SAFModel(
-                            municipality: municipality ?? '',
-                            saf: safController.text?.trim() ?? '',
-                            name: nameController.text?.trim() ?? '',
-                            address: addressController.text?.trim() ?? '',
-                            identifier: identifierController.text?.trim() ?? '',
-                            assistance: assistance ?? '',
-                            satisfaction: satisfaction ?? '',
-                            quality: quality ?? '',
-                            opinions: opinionsController.text?.trim() ?? '',
-                            causes: causesController.text?.trim() ?? '',
-                          ),
-                        );
-                        if (isOk) {
-                          keyForm.currentState.reset();
-                          for (var controller in controllers) {
-                            controller.clear();
-                            print(controller);
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 20,
+                        ),
+                        child: Text('Guardar'),
+                      ),
+                      onPressed: () async {
+                        if (keyForm.currentState.validate()) {
+                          final isOk = await widget.onSave(
+                            SAFModel(
+                              municipality: municipality ?? '',
+                              saf: safController.text?.trim() ?? '',
+                              name: nameController.text?.trim() ?? '',
+                              address: addressController.text?.trim() ?? '',
+                              identifier:
+                                  identifierController.text?.trim() ?? '',
+                              assistance: assistance ?? '',
+                              satisfaction: satisfaction ?? '',
+                              quality: quality ?? '',
+                              opinions: opinionsController.text?.trim() ?? '',
+                              causes: causesController.text?.trim() ?? '',
+                            ),
+                          );
+                          if (isOk) {
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setString('municipality', municipality);
+                            await prefs.setString('saf', safController.text);
+                            for (var controller in controllers) {
+                              controller.clear();
+                            }
+                            setState(() {
+                              assistance = null;
+                              satisfaction = null;
+                              quality = null;
+                            });
                           }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            SizedBox(height: MediaQuery.of(context).size.height / 2),
           ],
         ),
       ),
