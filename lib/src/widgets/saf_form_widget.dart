@@ -152,46 +152,50 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
                 return null;
               },
             ),
-            SizedBox(height: 10),
-            SAFDropdownField(
-              label: 'Nivel de satisfacción',
-              options: [
-                'Alto',
-                'Medio',
-                'Bajo',
-              ],
-              onChanged: (value) {
-                setState(() {
-                  satisfaction = value;
-                });
-              },
-              validator: (value) {
-                if (value == null) {
-                  return 'Campo obligatorio';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 10),
-            SAFDropdownField(
-              label: 'Calidad del servicio',
-              options: [
-                'Bueno',
-                'Regular',
-                'Malo',
-              ],
-              onChanged: (value) {
-                setState(() {
-                  quality = value;
-                });
-              },
-              validator: (value) {
-                if (value == null) {
-                  return 'Campo obligatorio';
-                }
-                return null;
-              },
-            ),
+            if (assistance != null && assistance != 'No asite')
+              SizedBox(height: 10),
+            if (assistance != null && assistance != 'No asite')
+              SAFDropdownField(
+                label: 'Nivel de satisfacción',
+                options: [
+                  'Alto',
+                  'Medio',
+                  'Bajo',
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    satisfaction = value;
+                  });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Campo obligatorio';
+                  }
+                  return null;
+                },
+              ),
+            if (assistance != null && assistance != 'No asite')
+              SizedBox(height: 10),
+            if (assistance != null && assistance != 'No asite')
+              SAFDropdownField(
+                label: 'Calidad del servicio',
+                options: [
+                  'Bueno',
+                  'Regular',
+                  'Malo',
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    quality = value;
+                  });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Campo obligatorio';
+                  }
+                  return null;
+                },
+              ),
             SizedBox(height: 10),
             SAFTextField(
               label: 'Opiniones generales sobre el servicio SAF',
@@ -225,19 +229,19 @@ class _SAFFormWidgetState extends State<SAFFormWidget> {
                       if (keyForm.currentState.validate()) {
                         final isOk = await widget.onSave(
                           SAFModel(
-                            municipality: municipality,
-                            saf: safController.text.trim(),
-                            name: nameController.text.trim(),
-                            address: addressController.text.trim(),
-                            identifier: identifierController.text.trim(),
-                            assistance: assistance,
-                            satisfaction: satisfaction,
-                            quality: quality,
-                            opinions: opinionsController.text.trim(),
-                            causes: causesController.text.trim(),
+                            municipality: municipality ?? '',
+                            saf: safController.text?.trim() ?? '',
+                            name: nameController.text?.trim() ?? '',
+                            address: addressController.text?.trim() ?? '',
+                            identifier: identifierController.text?.trim() ?? '',
+                            assistance: assistance ?? '',
+                            satisfaction: satisfaction ?? '',
+                            quality: quality ?? '',
+                            opinions: opinionsController.text?.trim() ?? '',
+                            causes: causesController.text?.trim() ?? '',
                           ),
                         );
-                        if(isOk) {
+                        if (isOk) {
                           keyForm.currentState.reset();
                           for (var controller in controllers) {
                             controller.clear();
