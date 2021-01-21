@@ -1,14 +1,16 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:share/share.dart';
 import 'package:theme_provider/theme_provider.dart';
-import 'package:uhsaf/src/models/saf_model.dart';
+import 'package:uhsaf/src/pages/pages.dart';
 import 'package:uhsaf/src/utils/utils.dart';
-import 'package:uhsaf/src/widgets/widgets.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final dbHelper = DatabaseHelper.instance;
 
   @override
@@ -21,9 +23,11 @@ class HomePage extends StatelessWidget {
             centerTitle: true,
             actions: [
               IconButton(
-                icon: Icon(Icons.share),
-                onPressed: _share,
-              )
+                icon: Icon(Icons.refresh),
+                onPressed: () {
+                  setState(() {});
+                },
+              ),
             ],
           ),
           drawer: Drawer(
@@ -70,6 +74,23 @@ class HomePage extends StatelessWidget {
                       ),
                       ListTile(
                         leading: Icon(
+                          Icons.input,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'Formulario',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onTap: () {
+                          Get.back();
+                          Get.to(FormPage());
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(
                           Icons.share,
                           color: Colors.white,
                         ),
@@ -108,28 +129,84 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-          body: SingleChildScrollView(
-            child: SAFFormWidget(onSave: _onSave),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Image.asset('assets/images/ilustration.png'),
+              buildButton(
+                context: context,
+                text: 'Formulario',
+                onPressed: () {
+                  Get.to(FormPage());
+                },
+              ),
+              buildButton(
+                context: context,
+                text: 'Exportar Datos',
+                onPressed: _share,
+              ),
+              FutureBuilder<int>(
+                future: dbHelper.queryRowCount(),
+                builder: (context, snapshot) {
+                  return Container(
+                    margin: EdgeInsets.all(10),
+                    child: Text(
+                      snapshot.hasData
+                          ? 'Cantidad de registros: ${snapshot.data}'
+                          : '',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Future<bool> _onSave(SAFModel model) async {
-    try {
-      await dbHelper.insert(model.toJson());
-      Get.rawSnackbar(message: 'Datos guardados correctamente');
-      return true;
-    } catch (e) {
-      log(e.toString());
-      Get.rawSnackbar(message: 'Hubo un error al guardar los datos');
-      return false;
-    }
-  }
-
   Future<void> _share() async {
     String csvPath = await dbHelper.saveCSV();
     Share.shareFiles(['$csvPath'], text: 'Database CSV');
+  }
+
+  Widget buildButton({
+    @required BuildContext context,
+    @required String text,
+    @required VoidCallback onPressed,
+  }) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlineButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 15,
+                  horizontal: 20,
+                ),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: ThemeProvider.themeOf(context).id == 'dark'
+                        ? Colors.white
+                        : ThemeProvider.themeOf(context).data.primaryColor,
+                  ),
+                ),
+              ),
+              onPressed: onPressed,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
